@@ -27,7 +27,7 @@ jobs:
     if: (github.event.pull_request.base.repo.full_name != github.event.pull_request.head.repo.full_name) && (github.event_name != 'pull_request')
     runs-on: [ windows-latest ]
     steps:
-      - uses: microsoft/AL-Go-Actions/VerifyPRChanges@v4.0
+      - uses: freddydk/AL-Go/Actions/VerifyPRChanges@checkSecrets
 
   Initialization:
     needs: [ PregateCheck ]
@@ -42,6 +42,11 @@ jobs:
       buildOrderJson: ${{ steps.determineProjectsToBuild.outputs.BuildOrderJson }}
       workflowDepth: ${{ steps.DetermineWorkflowDepth.outputs.WorkflowDepth }}
     steps:
+      - name: Dump Workflow Information
+        uses: freddydk/AL-Go/Actions/DumpWorkflowInfo@checkSecrets
+        with:
+          shell: powershell
+
       - name: Checkout
         uses: actions/checkout@v3
         with:
@@ -50,14 +55,14 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: microsoft/AL-Go-Actions/WorkflowInitialize@v4.0
+        uses: freddydk/AL-Go/Actions/WorkflowInitialize@checkSecrets
         with:
           shell: powershell
           eventId: "DO0104"
 
       - name: Read settings
         id: ReadSettings
-        uses: microsoft/AL-Go-Actions/ReadSettings@v4.0
+        uses: freddydk/AL-Go/Actions/ReadSettings@checkSecrets
         with:
           shell: powershell
 
@@ -68,7 +73,7 @@ jobs:
 
       - name: Determine Projects To Build
         id: determineProjectsToBuild
-        uses: microsoft/AL-Go-Actions/DetermineProjectsToBuild@v4.0
+        uses: freddydk/AL-Go/Actions/DetermineProjectsToBuild@checkSecrets
         with:
           shell: powershell
           maxBuildDepth: ${{ env.workflowDepth }}
@@ -97,14 +102,14 @@ jobs:
       artifactsNameSuffix: 'PR${{ github.event.number }}'
 
   StatusCheck:
-    runs-on: [ windows-latest ]
     needs: [ Initialization, Build ]
     if: (!cancelled())
+    runs-on: [ windows-latest ]
     name: Pull Request Status Check
     steps:
       - name: Pull Request Status Check
         id: PullRequestStatusCheck
-        uses: microsoft/AL-Go-Actions/PullRequestStatusCheck@v4.0
+        uses: freddydk/AL-Go/Actions/PullRequestStatusCheck@checkSecrets
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
