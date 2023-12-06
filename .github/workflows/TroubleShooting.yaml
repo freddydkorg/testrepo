@@ -2,6 +2,11 @@ name: 'Troubleshooting'
 
 on:
   workflow_dispatch:
+    inputs:
+      useLatestTroubleshooting:
+        description: Use the latest troubleshooting action from https://aka.ms/al-go
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -17,20 +22,31 @@ env:
 
 jobs:
   Troubleshooting:
+    if: github.event.inputs.useLatestTroubleshooting == 'false'
     needs: [ ]
     runs-on: [ windows-latest ]
     steps:
-      - name: Dump Workflow Information
-        uses: freddydk/AL-Go/Actions/DumpWorkflowInfo@checkSecrets
-        with:
-          shell: powershell
-
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Initialize the workflow
+      - name: Troubleshooting
         id: init
         uses: freddydk/AL-Go/Actions/TroubleShooting@checkSecrets
+        with:
+          shell: powershell
+          gitHubSecrets: ${{ toJson(secrets) }}
+
+  LatestTroubleshooting:
+    if: github.event.inputs.useLatestTroubleshooting == 'true'
+    needs: [ ]
+    runs-on: [ windows-latest ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Troubleshooting
+        id: init
+        uses: microsoft/AL-Go/Actions/TroubleShooting@main
         with:
           shell: powershell
           gitHubSecrets: ${{ toJson(secrets) }}
