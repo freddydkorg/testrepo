@@ -22,7 +22,6 @@ env:
 
 jobs:
   Troubleshooting:
-    name: freddydk/AL-Go/Actions/TroubleShooting@checkSecrets
     runs-on: [ windows-latest ]
     steps:
       - name: Checkout
@@ -31,7 +30,7 @@ jobs:
           lfs: true
 
       - name: Troubleshooting
-        uses: freddydk/AL-Go/Actions/TroubleShooting@checkSecrets
+        uses: freddydk/AL-Go/Actions/Troubleshooting@checkSecrets
         with:
           shell: powershell
           gitHubSecrets: ${{ toJson(secrets) }}
